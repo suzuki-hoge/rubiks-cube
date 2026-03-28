@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
-import type { Move } from '../types';
+import type { FaceName, Move } from '../types';
 
 interface SwipeStart {
   point: THREE.Vector3;
@@ -12,7 +12,7 @@ interface SwipeStart {
 }
 
 // Determine which face was hit based on the face normal
-function classifyFace(normal: THREE.Vector3): 'U' | 'D' | 'F' | 'B' | 'R' | 'L' | null {
+function classifyFace(normal: THREE.Vector3): FaceName | null {
   const abs = new THREE.Vector3(Math.abs(normal.x), Math.abs(normal.y), Math.abs(normal.z));
   if (abs.y > abs.x && abs.y > abs.z) return normal.y > 0 ? 'U' : 'D';
   if (abs.x > abs.y && abs.x > abs.z) return normal.x > 0 ? 'R' : 'L';
@@ -20,10 +20,20 @@ function classifyFace(normal: THREE.Vector3): 'U' | 'D' | 'F' | 'B' | 'R' | 'L' 
   return null;
 }
 
+const FACE_TO_DIR: Record<FaceName, string> = {
+  U: 'py',
+  D: 'ny',
+  R: 'px',
+  L: 'nx',
+  F: 'pz',
+  B: 'nz',
+};
+
 export function useSwipeDetection(
   onMove: (move: Move) => void,
-  onHighlight: (face: string | null, layer: number | null) => void,
+  onHighlight: (cubieKey: string | null, faceDir: string | null) => void,
   minDistance: number,
+  frontFace: FaceName,
 ) {
   const swipeStart = useRef<SwipeStart | null>(null);
 
@@ -34,7 +44,6 @@ export function useSwipeDetection(
       if (!intersection?.face) return;
 
       const normal = intersection.face.normal.clone();
-      // Transform normal to world space
       const obj = intersection.object;
       normal.applyQuaternion(obj.getWorldQuaternion(new THREE.Quaternion()));
 
@@ -53,17 +62,11 @@ export function useSwipeDetection(
         cubiePosition: cubiePos,
       };
 
-      // Determine which layer to highlight
+      // Highlight the touched face
       const rX = Math.round(cubiePos.x);
       const rY = Math.round(cubiePos.y);
-
-      if (face === 'U' || face === 'D') {
-        onHighlight(face, null);
-      } else if (face === 'R' || face === 'L') {
-        onHighlight(face, rY);
-      } else {
-        onHighlight(face, rX);
-      }
+      const rZ = Math.round(cubiePos.z);
+      onHighlight(`${rX},${rY},${rZ}`, FACE_TO_DIR[face]);
     },
     [onHighlight],
   );
@@ -90,65 +93,62 @@ export function useSwipeDetection(
       const roundedZ = Math.round(cubiePos.z);
 
       const isHorizontal = Math.abs(dx) > Math.abs(dy);
-      const move = resolveMove(face, roundedX, roundedY, roundedZ, isHorizontal, dx, dy);
+      const move = resolveMove(face, roundedX, roundedY, roundedZ, isHorizontal, dx, dy, frontFace);
       if (move) {
         onMove(move);
       }
     },
-    [onMove, onHighlight, minDistance],
+    [onMove, onHighlight, minDistance, frontFace],
   );
 
   return { handlePointerDown, handlePointerUp };
 }
 
 function resolveMove(
-  face: string,
+  face: FaceName,
   x: number,
   y: number,
   z: number,
   isHorizontal: boolean,
   dx: number,
   dy: number,
+  frontFace: FaceName,
 ): Move | null {
   // U face: horizontal swipe = row rotation, vertical swipe = column rotation
   if (face === 'U') {
     if (isHorizontal) {
-      // Row based on z position (z=1 is front/row3, z=-1 is back/row1)
-      if (z === -1) return dx > 0 ? "U'" : 'U'; // back row → U layer
-      if (z === 0) return dx > 0 ? "y'" : 'y'; // center → rotation
-      if (z === 1) return dx > 0 ? 'D' : "D'"; // front row → D layer (inverted because viewing from top)
+      if (z === -1) return dx > 0 ? "U'" : 'U';
+      if (z === 0) return face === frontFace ? (dx > 0 ? "y'" : 'y') : null;
+      if (z === 1) return dx > 0 ? 'D' : "D'";
     } else {
-      // Column based on x position
-      if (x === -1) return dy > 0 ? 'L' : "L'"; // left column
-      if (x === 0) return dy > 0 ? 'x' : "x'"; // center → rotation
-      if (x === 1) return dy > 0 ? "R'" : 'R'; // right column
+      if (x === -1) return dy > 0 ? 'L' : "L'";
+      if (x === 0) return face === frontFace ? (dy > 0 ? "x'" : 'x') : null;
+      if (x === 1) return dy > 0 ? "R'" : 'R';
     }
   }
 
   // R face: vertical swipe = layer rotation
   if (face === 'R') {
     if (!isHorizontal) {
-      // Column based on z position (z=1 is front, z=-1 is back)
       if (z === 1) return dy > 0 ? 'F' : "F'";
-      if (z === 0) return dy > 0 ? 'x' : "x'"; // center → rotation
+      if (z === 0) return face === frontFace ? (dy > 0 ? "x'" : 'x') : null;
       if (z === -1) return dy > 0 ? "B'" : 'B';
     } else {
-      // Horizontal swipe on R face → y rotation or U/D
       if (y === 1) return dx > 0 ? "U'" : 'U';
-      if (y === 0) return dx > 0 ? "y'" : 'y';
+      if (y === 0) return face === frontFace ? (dx > 0 ? "y'" : 'y') : null;
       if (y === -1) return dx > 0 ? 'D' : "D'";
     }
   }
 
-  // F face: similar logic
+  // F face
   if (face === 'F') {
     if (!isHorizontal) {
       if (x === 1) return dy > 0 ? "R'" : 'R';
-      if (x === 0) return dy > 0 ? 'x' : "x'";
+      if (x === 0) return face === frontFace ? (dy > 0 ? "x'" : 'x') : null;
       if (x === -1) return dy > 0 ? 'L' : "L'";
     } else {
       if (y === 1) return dx > 0 ? "U'" : 'U';
-      if (y === 0) return dx > 0 ? "y'" : 'y';
+      if (y === 0) return face === frontFace ? (dx > 0 ? "y'" : 'y') : null;
       if (y === -1) return dx > 0 ? 'D' : "D'";
     }
   }

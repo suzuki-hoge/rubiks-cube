@@ -7,12 +7,13 @@ import type { CubeState, FaceColor, Move } from '../types';
 
 interface CubeGroupProps {
   cubeState: CubeState;
+  centers: FaceColor[];
   animatingMove: Move | null;
   animationDuration: number;
   onAnimationComplete: () => void;
-  glowingPieces: Set<string>; // "corner-0", "edge-8" etc.
+  glowingPieces: Set<string>;
+  highlightedCubie: string | null;
   highlightedFace: string | null;
-  highlightedLayer: number | null;
 }
 
 // Map from 3D position to cubie identity for glow matching
@@ -148,18 +149,19 @@ function getMoveRotation(move: Move): {
 
 export function CubeGroup({
   cubeState,
+  centers,
   animatingMove,
   animationDuration,
   onAnimationComplete,
   glowingPieces,
-  highlightedFace: _highlightedFace,
-  highlightedLayer: _highlightedLayer,
+  highlightedCubie,
+  highlightedFace,
 }: CubeGroupProps) {
   const animGroupRef = useRef<THREE.Group>(null);
   const animProgress = useRef(0);
   const animConfig = useRef<{ axis: THREE.Vector3; angle: number } | null>(null);
 
-  const facelets = useMemo(() => stateToFacelets(cubeState), [cubeState]);
+  const facelets = useMemo(() => stateToFacelets(cubeState, centers), [cubeState, centers]);
   const cubies = useMemo(() => buildCubies(facelets), [facelets]);
 
   const moveRotation = useMemo(
@@ -237,6 +239,7 @@ export function CubeGroup({
             position={c.position}
             colors={c.colors}
             glowing={shouldGlow(...c.position)}
+            highlightedFace={highlightedCubie === c.key ? highlightedFace : null}
           />
         ))}
       {/* Animating cubies group */}
@@ -249,6 +252,7 @@ export function CubeGroup({
               position={c.position}
               colors={c.colors}
               glowing={shouldGlow(...c.position)}
+              highlightedFace={highlightedCubie === c.key ? highlightedFace : null}
             />
           ))}
       </group>

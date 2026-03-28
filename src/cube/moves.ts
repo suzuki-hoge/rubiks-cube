@@ -60,12 +60,12 @@ const MOVES: Record<string, MoveDefinition> = {
 
 // Rotation definitions (whole cube rotations)
 const ROTATIONS: Record<string, MoveDefinition> = {
-  // x = R-rotation of whole cube (R + L' direction)
+  // x = R-rotation of whole cube: (x,y,z)→(x,z,-y), animation -π/2 around x
   x: {
-    cp: [3, 2, 6, 7, 0, 1, 5, 4] as CornerPiece[],
+    cp: [4, 5, 1, 0, 7, 6, 2, 3] as CornerPiece[],
     co: [2, 1, 2, 1, 1, 2, 1, 2] as CornerOrientation[],
-    ep: [11, 3, 10, 7, 8, 1, 9, 5, 0, 2, 6, 4] as EdgePiece[],
-    eo: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] as EdgeOrientation[],
+    ep: [8, 5, 9, 1, 11, 7, 10, 3, 4, 6, 2, 0] as EdgePiece[],
+    eo: [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0] as EdgeOrientation[],
   },
   // y = U-rotation of whole cube (CW from above)
   y: {

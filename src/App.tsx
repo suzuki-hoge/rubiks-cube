@@ -16,6 +16,7 @@ export default function App() {
   const { settings, updateSettings, resetSettings } = useSettings();
   const {
     cubeState,
+    centers,
     scramble,
     scrambledState,
     animatingMove,
@@ -95,6 +96,7 @@ export default function App() {
       <div className="cube-container">
         <CubeScene
           cubeState={cubeState}
+          centers={centers}
           animatingMove={animatingMove}
           animationDuration={settings.swipe.animationDuration}
           onAnimationComplete={handleAnimationComplete}

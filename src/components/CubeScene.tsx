@@ -1,12 +1,13 @@
 import { Canvas } from '@react-three/fiber';
 import { CubeGroup } from './CubeGroup';
-import type { CubeState, Move } from '../types';
+import type { CubeState, FaceColor, FaceName, Move } from '../types';
 import { useSwipeDetection } from '../hooks/useSwipeDetection';
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useMemo, useState, useRef } from 'react';
 import * as THREE from 'three';
 
 interface CubeSceneProps {
   cubeState: CubeState;
+  centers: FaceColor[];
   animatingMove: Move | null;
   animationDuration: number;
   onAnimationComplete: () => void;
@@ -17,8 +18,23 @@ interface CubeSceneProps {
   gyroGamma: number;
 }
 
+// Determine which face is most camera-facing
+function computeFrontFace(cameraX: number, cameraY: number, cameraZ: number): FaceName {
+  const dots: [FaceName, number][] = [
+    ['U', cameraY],
+    ['D', -cameraY],
+    ['R', cameraX],
+    ['L', -cameraX],
+    ['F', cameraZ],
+    ['B', -cameraZ],
+  ];
+  dots.sort((a, b) => b[1] - a[1]);
+  return dots[0]![0];
+}
+
 function CubeInteraction({
   cubeState,
+  centers,
   animatingMove,
   animationDuration,
   onAnimationComplete,
@@ -28,33 +44,36 @@ function CubeInteraction({
   gyroBeta,
   gyroGamma,
 }: CubeSceneProps) {
+  const [highlightedCubie, setHighlightedCubie] = useState<string | null>(null);
   const [highlightedFace, setHighlightedFace] = useState<string | null>(null);
-  const [highlightedLayer, setHighlightedLayer] = useState<number | null>(null);
   const groupRef = useRef<THREE.Group>(null);
 
-  const handleHighlight = useCallback((face: string | null, layer: number | null) => {
-    setHighlightedFace(face);
-    setHighlightedLayer(layer);
+  const handleHighlight = useCallback((cubieKey: string | null, faceDir: string | null) => {
+    setHighlightedCubie(cubieKey);
+    setHighlightedFace(faceDir);
   }, []);
+
+  // Camera angles influenced by gyroscope
+  const basePhi = Math.PI / 6;
+  const baseTheta = Math.PI / 6;
+  const phi = basePhi - (gyroBeta * Math.PI) / 180;
+  const theta = baseTheta + (gyroGamma * Math.PI) / 180;
+  const distance = 7;
+  const cameraX = distance * Math.cos(phi) * Math.sin(theta);
+  const cameraY = distance * Math.sin(phi);
+  const cameraZ = distance * Math.cos(phi) * Math.cos(theta);
+
+  const frontFace = useMemo(
+    () => computeFrontFace(cameraX, cameraY, cameraZ),
+    [cameraX, cameraY, cameraZ],
+  );
 
   const { handlePointerDown, handlePointerUp } = useSwipeDetection(
     onMove,
     handleHighlight,
     minSwipeDistance,
+    frontFace,
   );
-
-  // Camera angles influenced by gyroscope
-  // Base angle: slightly tilted to show 3 faces (U, F, R)
-  const basePhi = Math.PI / 6; // 30 degrees from top
-  const baseTheta = Math.PI / 6; // 30 degrees from front
-
-  const phi = basePhi - (gyroBeta * Math.PI) / 180;
-  const theta = baseTheta + (gyroGamma * Math.PI) / 180;
-
-  const distance = 7;
-  const cameraX = distance * Math.cos(phi) * Math.sin(theta);
-  const cameraY = distance * Math.sin(phi);
-  const cameraZ = distance * Math.cos(phi) * Math.cos(theta);
 
   return (
     <>
@@ -65,12 +84,13 @@ function CubeInteraction({
       <group ref={groupRef} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
         <CubeGroup
           cubeState={cubeState}
+          centers={centers}
           animatingMove={animatingMove}
           animationDuration={animationDuration}
           onAnimationComplete={onAnimationComplete}
           glowingPieces={glowingPieces}
+          highlightedCubie={highlightedCubie}
           highlightedFace={highlightedFace}
-          highlightedLayer={highlightedLayer}
         />
       </group>
     </>
@@ -80,7 +100,6 @@ function CubeInteraction({
 export function CubeScene(props: CubeSceneProps) {
   const { gyroBeta, gyroGamma } = props;
 
-  // Compute camera position for Canvas
   const basePhi = Math.PI / 6;
   const baseTheta = Math.PI / 6;
   const phi = basePhi - (gyroBeta * Math.PI) / 180;

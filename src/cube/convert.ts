@@ -37,16 +37,21 @@ const EDGE_FACELETS: [number, number][] = [
 ];
 
 // Convert piece-based state to 54-facelet array
-export function stateToFacelets(state: CubeState): FaceColor[] {
+export const DEFAULT_CENTERS: FaceColor[] = ['W', 'R', 'G', 'Y', 'O', 'B'];
+
+export function stateToFacelets(
+  state: CubeState,
+  centers: FaceColor[] = DEFAULT_CENTERS,
+): FaceColor[] {
   const facelets = new Array<FaceColor>(54);
 
-  // Centers (fixed)
-  facelets[4] = 'W'; // U center
-  facelets[13] = 'R'; // R center
-  facelets[22] = 'G'; // F center
-  facelets[31] = 'Y'; // D center
-  facelets[40] = 'O'; // L center
-  facelets[49] = 'B'; // B center
+  // Centers: [U, R, F, D, L, B]
+  facelets[4] = centers[0]!;
+  facelets[13] = centers[1]!;
+  facelets[22] = centers[2]!;
+  facelets[31] = centers[3]!;
+  facelets[40] = centers[4]!;
+  facelets[49] = centers[5]!;
 
   // Corners
   for (let pos = 0; pos < 8; pos++) {
