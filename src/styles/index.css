@@ -1,0 +1,332 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+/* Control Bar */
+.control-bar {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.control-bar button {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #2a2a4a;
+  color: #e0e0e0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.control-bar button:active {
+  background: #3a3a6a;
+}
+
+.control-bar .settings-btn {
+  flex: 0 0 44px;
+  font-size: 20px;
+}
+
+/* Cube Container */
+.cube-container {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.cube-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Cross Solution */
+.cross-solution {
+  flex-shrink: 0;
+  padding: 8px;
+  border-top: 1px solid #333;
+}
+
+.cross-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.cross-empty {
+  font-size: 13px;
+  color: #666;
+}
+
+.cross-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+  overflow-x: auto;
+}
+
+.cross-tab {
+  padding: 4px 10px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #2a2a4a;
+  color: #aaa;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cross-tab.active {
+  background: #4a4a8a;
+  color: #fff;
+  border-color: #6a6aaa;
+}
+
+.cross-moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+  min-height: 28px;
+  align-items: center;
+}
+
+.cross-move {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  background: #2a2a4a;
+  color: #ccc;
+}
+
+.cross-move.done {
+  background: #2a4a2a;
+  color: #8c8;
+}
+
+.cross-move.current {
+  background: #4a4a2a;
+  color: #ee8;
+  font-weight: bold;
+}
+
+.cross-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.cross-controls button {
+  min-width: 44px;
+  min-height: 36px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #2a2a4a;
+  color: #e0e0e0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.cross-controls button:active {
+  background: #3a3a6a;
+}
+
+.cross-controls button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* F2L Guide */
+.f2l-guide {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  border-top: 1px solid #333;
+}
+
+.f2l-label {
+  font-size: 12px;
+  color: #888;
+  margin-right: 4px;
+}
+
+.f2l-btn {
+  flex: 1;
+  min-height: 40px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #2a2a4a;
+  color: #ccc;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.f2l-btn.active {
+  background: #3a3a8a;
+  color: #fff;
+  border-color: #7a7aee;
+  box-shadow: 0 0 8px rgba(122, 122, 238, 0.4);
+}
+
+.f2l-btn:active {
+  background: #3a3a6a;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #1e1e3e;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.modal-content h3 {
+  font-size: 14px;
+  color: #aaa;
+  margin: 12px 0 6px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}
+
+.modal-close {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #2a2a4a;
+  color: #e0e0e0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Scramble Modal */
+.scramble-text {
+  font-size: 20px;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  line-height: 1.6;
+  word-spacing: 8px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* Settings */
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.setting-row label {
+  font-size: 13px;
+  min-width: 100px;
+  color: #ccc;
+}
+
+.setting-slider {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.setting-slider input[type='range'] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  background: #444;
+  border-radius: 2px;
+  outline: none;
+}
+
+.setting-slider input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #6a6aee;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.setting-value {
+  font-size: 13px;
+  min-width: 48px;
+  text-align: right;
+  color: #aaa;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.settings-actions button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #2a2a4a;
+  color: #e0e0e0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.settings-actions button:active {
+  background: #3a3a6a;
+}
