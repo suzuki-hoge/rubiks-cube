@@ -1,10 +1,13 @@
+import { TfiReload } from 'react-icons/tfi';
+import { RxReload } from 'react-icons/rx';
+import { MdEdgesensorHigh } from 'react-icons/md';
+
 interface ControlBarProps {
   onShuffle: () => void;
   onRetry: () => void;
   onShowScramble: () => void;
   onShowSettings: () => void;
   onRequestGyro: () => void;
-  gyroPermitted: boolean;
 }
 
 export function ControlBar({
@@ -13,14 +16,21 @@ export function ControlBar({
   onShowScramble,
   onShowSettings,
   onRequestGyro,
-  gyroPermitted,
 }: ControlBarProps) {
   return (
     <div className="control-bar">
-      <button onClick={onShuffle}>シャッフル</button>
-      <button onClick={onRetry}>やり直す</button>
-      <button onClick={onShowScramble}>スクランブル</button>
-      {!gyroPermitted && <button onClick={onRequestGyro}>ジャイロ</button>}
+      <button onClick={onShuffle} title="シャッフル">
+        <TfiReload />
+      </button>
+      <button onClick={onRetry} title="やり直す">
+        <RxReload />
+      </button>
+      <button onClick={onShowScramble} title="スクランブル" className="scramble-btn">
+        R&apos;
+      </button>
+      <button onClick={onRequestGyro} title="ジャイロ">
+        <MdEdgesensorHigh />
+      </button>
       <button onClick={onShowSettings} className="settings-btn">
         ⚙
       </button>

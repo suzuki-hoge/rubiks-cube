@@ -13,7 +13,7 @@ body,
   overflow: hidden;
   background: #ffffff;
   color: #333;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -43,14 +43,21 @@ body,
   border-radius: 8px;
   background: #f5f5f5;
   color: #333;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 20px;
   cursor: pointer;
   transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .control-bar button:active {
   background: #e0e0e0;
+}
+
+.control-bar .scramble-btn {
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .control-bar .settings-btn {
@@ -75,15 +82,15 @@ body,
   flex-shrink: 0;
   padding: 8px;
   border-top: 1px solid #e0e0e0;
-  min-height: 72px;
 }
 
-.cross-empty {
+.cross-status {
   font-size: 13px;
   color: #999;
   display: flex;
   align-items: center;
   gap: 6px;
+  height: 40px;
 }
 
 .cross-spinner {
@@ -159,59 +166,65 @@ body,
 .cross-tabs {
   display: flex;
   gap: 4px;
-  flex-wrap: wrap;
 }
 
 .cross-tab {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  position: relative;
+  flex: 0 0 calc((100% - 20px) / 6);
+  height: 40px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background: #f5f5f5;
   color: #777;
-  font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cross-tab.active {
-  background: #4a6cf7;
-  color: #fff;
-  border-color: #4a6cf7;
+  border-width: 2px;
+}
+
+.cross-tab.active.face-B {
+  border-color: #4466ff;
+}
+.cross-tab.active.face-R {
+  border-color: #ee3333;
+}
+.cross-tab.active.face-G {
+  border-color: #22aa22;
+}
+.cross-tab.active.face-O {
+  border-color: #ee8800;
 }
 
 .tab-main {
   font-weight: 500;
+  font-size: 15px;
+}
+
+.tab-icons {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  display: flex;
+  gap: 1px;
 }
 
 .tab-icon {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 1px 3px;
-  border-radius: 2px;
   line-height: 1;
 }
 
 .tab-icon-b {
-  background: rgba(0, 0, 255, 0.12);
   color: #4466ff;
 }
 
 .tab-icon-y {
-  background: rgba(0, 0, 0, 0.08);
   color: #888;
-}
-
-.cross-tab.active .tab-icon-b {
-  background: rgba(255, 255, 255, 0.25);
-  color: #dde;
-}
-
-.cross-tab.active .tab-icon-y {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ccd;
 }
 
 .cross-moves {
@@ -219,16 +232,18 @@ body,
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 6px;
-  min-height: 28px;
+  min-height: 36px;
   align-items: center;
 }
 
 .cross-move {
-  display: inline-block;
-  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   border-radius: 4px;
   font-size: 14px;
-  font-family: 'SF Mono', 'Menlo', monospace;
   background: #f0f0f0;
   color: #555;
   cursor: pointer;
@@ -339,7 +354,7 @@ body,
 /* Scramble Modal */
 .scramble-text {
   font-size: 20px;
-  font-family: 'SF Mono', 'Menlo', monospace;
+
   line-height: 1.6;
   word-spacing: 8px;
   text-align: center;
@@ -390,7 +405,6 @@ body,
   min-width: 48px;
   text-align: right;
   color: #888;
-  font-family: 'SF Mono', 'Menlo', monospace;
 }
 
 .settings-actions {

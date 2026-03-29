@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
+import { TfiReload } from 'react-icons/tfi';
 import type { Move } from '../types';
 import type { RankedSolution, SolutionsByFace } from '../cube/solutionSelector';
 
@@ -81,25 +82,6 @@ export function CrossSolution({
     [stepIdx, currentSolution, onExecuteMove, onUndo],
   );
 
-  if (!solving && !hasSolutions) {
-    return (
-      <div className="cross-solution">
-        <div className="cross-empty">シャッフルしてください</div>
-      </div>
-    );
-  }
-
-  if (solving) {
-    return (
-      <div className="cross-solution">
-        <div className="cross-empty">
-          <span className="cross-spinner" />
-          計算中...
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="cross-solution">
       <div className="cross-face-row">
@@ -114,19 +96,31 @@ export function CrossSolution({
         ))}
       </div>
       <div className="cross-tabs">
-        {solutions.map((sol, i) => (
-          <button
-            key={i}
-            className={`cross-tab ${i === selectedIdx ? 'active' : ''}`}
-            onClick={() => handleToggleTab(i)}
-          >
-            <TabLabel sol={sol} />
-          </button>
-        ))}
+        {solving ? (
+          <div className="cross-status">
+            <span className="cross-spinner" />
+            計算中...
+          </div>
+        ) : !hasSolutions ? (
+          <div className="cross-status">
+            <TfiReload />
+            シャッフルしてください
+          </div>
+        ) : (
+          solutions.map((sol, i) => (
+            <button
+              key={i}
+              className={`cross-tab ${i === selectedIdx ? `active face-${selectedFace}` : ''}`}
+              onClick={() => handleToggleTab(i)}
+            >
+              <TabLabel sol={sol} />
+            </button>
+          ))
+        )}
       </div>
-      {selectedIdx !== null && (
-        <div className="cross-moves">
-          {currentSolution.map((move, i) => (
+      <div className="cross-moves">
+        {selectedIdx !== null &&
+          currentSolution.map((move, i) => (
             <span
               key={i}
               className={`cross-move ${i < stepIdx ? 'done' : ''} ${i === stepIdx ? 'current' : ''}`}
@@ -135,21 +129,24 @@ export function CrossSolution({
               {move}
             </span>
           ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
 
-function TabLabel({ sol }: { sol: RankedSolution }) {
+export function TabLabel({ sol }: { sol: RankedSolution }) {
   const isErgo = sol.category === '最良';
   const mainText = isErgo ? `${sol.score}点` : `${sol.moveCount}手`;
+  const showB = sol.hasB;
+  const showY = sol.hasY;
 
   return (
     <>
       <span className="tab-main">{mainText}</span>
-      {sol.hasB && <span className="tab-icon tab-icon-b">B</span>}
-      {sol.hasY && <span className="tab-icon tab-icon-y">y</span>}
+      <span className="tab-icons">
+        {showB && <span className="tab-icon tab-icon-b">B</span>}
+        {showY && <span className="tab-icon tab-icon-y">y</span>}
+      </span>
     </>
   );
 }

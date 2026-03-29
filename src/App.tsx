@@ -27,7 +27,7 @@ export default function App() {
     undo,
   } = useCubeState();
 
-  const { beta, gamma, permitted, requestPermission } = useGyroscope(settings);
+  const { beta, gamma, requestPermission } = useGyroscope(settings);
 
   const { solutionsByFace, solving: crossSolving } = useCrossSolver(scrambledState, scramble);
 
@@ -90,7 +90,6 @@ export default function App() {
         onShowScramble={() => setScrambleModalOpen(true)}
         onShowSettings={() => setSettingsModalOpen(true)}
         onRequestGyro={requestPermission}
-        gyroPermitted={permitted}
       />
 
       <div className="cube-container">

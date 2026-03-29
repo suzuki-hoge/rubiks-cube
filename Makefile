@@ -1,4 +1,4 @@
-.PHONY: dev build test fix fix-all lint format
+.PHONY: dev build test fix fix-all lint format sb
 
 dev:
 	yarn dev
@@ -18,3 +18,7 @@ format:
 fix: lint format test
 
 fix-all: fix build
+	yarn build-storybook
+
+sb:
+	yarn storybook
