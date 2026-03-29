@@ -132,13 +132,20 @@ export function useSwipeDetection(
 // Check if a cubie face at a given position would have a sticker color (not body)
 function isCubieFaceColored(x: number, y: number, z: number, face: FaceName): boolean {
   switch (face) {
-    case 'U': return y === 1;
-    case 'D': return y === -1;
-    case 'R': return x === 1;
-    case 'L': return x === -1;
-    case 'F': return z === 1;
-    case 'B': return z === -1;
-    default: return false;
+    case 'U':
+      return y === 1;
+    case 'D':
+      return y === -1;
+    case 'R':
+      return x === 1;
+    case 'L':
+      return x === -1;
+    case 'F':
+      return z === 1;
+    case 'B':
+      return z === -1;
+    default:
+      return false;
   }
 }
 

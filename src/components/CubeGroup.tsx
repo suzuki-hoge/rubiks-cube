@@ -177,7 +177,7 @@ export function CubeGroup({
     } else {
       animConfig.current = null;
     }
-  }, [animatingMove, moveRotation]);
+  }, [moveRotation]);
 
   useFrame((_, delta) => {
     if (!animConfig.current || !animGroupRef.current) return;

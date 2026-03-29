@@ -27,17 +27,15 @@ export function Cubie({ position, colors, glowing, highlightedFace }: CubieProps
       const faceColor = colors[side];
       const color = faceColor ? FACE_COLORS[faceColor] : CUBE_BODY_COLOR;
       const isHighlighted = highlightedFace === side && faceColor != null;
-      const highlightEmissive = faceColor === 'W'
-        ? new THREE.Color('#888888')
-        : new THREE.Color(lightenColor(color, 0.3));
+      const highlightEmissive =
+        faceColor === 'W' ? new THREE.Color('#888888') : new THREE.Color(lightenColor(color, 0.3));
       return new THREE.MeshStandardMaterial({
         color,
-        emissive:
-          isHighlighted
-            ? highlightEmissive
-            : (glowing && faceColor)
-              ? new THREE.Color(color)
-              : new THREE.Color(0x000000),
+        emissive: isHighlighted
+          ? highlightEmissive
+          : glowing && faceColor
+            ? new THREE.Color(color)
+            : new THREE.Color(0x000000),
         emissiveIntensity: isHighlighted ? 0.5 : glowing ? 0.5 : 0,
         roughness: faceColor ? 0.3 : 0.8,
         metalness: 0.0,

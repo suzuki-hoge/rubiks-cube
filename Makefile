@@ -10,7 +10,7 @@ test:
 	yarn test
 
 lint:
-	yarn eslint . --fix
+	yarn eslint . --fix --max-warnings 0
 
 format:
 	yarn prettier --write 'src/**/*.{ts,tsx,css}'

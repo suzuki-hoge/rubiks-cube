@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import type { Move } from '../types';
 
 interface CrossSolutionProps {
@@ -19,7 +19,7 @@ export function CrossSolution({
   const [isPlaying, setIsPlaying] = useState(false);
   const playTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const currentSolution = solutions[selectedIdx] ?? [];
+  const currentSolution = useMemo(() => solutions[selectedIdx] ?? [], [solutions, selectedIdx]);
 
   const handleSelectSolution = useCallback((idx: number) => {
     setSelectedIdx(idx);

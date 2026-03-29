@@ -68,7 +68,7 @@ function CubeInteraction({
     [cameraX, cameraY, cameraZ],
   );
 
-  const { handlePointerDown, handlePointerUp, handlePointerCancel } = useSwipeDetection(
+  const { handlePointerDown, handlePointerUp } = useSwipeDetection(
     onMove,
     handleHighlight,
     minSwipeDistance,
