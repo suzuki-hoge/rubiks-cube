@@ -12,7 +12,7 @@ interface CubeSceneProps {
   animationDuration: number;
   onAnimationComplete: () => void;
   onMove: (move: Move) => void;
-  glowingPieces: Set<string>;
+  highlightedPieces: Set<string>;
   minSwipeDistance: number;
   gyroBeta: number;
   gyroGamma: number;
@@ -39,7 +39,7 @@ function CubeInteraction({
   animationDuration,
   onAnimationComplete,
   onMove,
-  glowingPieces,
+  highlightedPieces,
   minSwipeDistance,
   gyroBeta,
   gyroGamma,
@@ -88,7 +88,7 @@ function CubeInteraction({
           animatingMove={animatingMove}
           animationDuration={animationDuration}
           onAnimationComplete={onAnimationComplete}
-          glowingPieces={glowingPieces}
+          highlightedPieces={highlightedPieces}
           highlightedCubie={highlightedCubie}
           highlightedFace={highlightedFace}
         />

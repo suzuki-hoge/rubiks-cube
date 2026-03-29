@@ -83,14 +83,15 @@ export default function App() {
     undo,
   } = useCubeState();
 
-  const { beta, gamma, requestPermission } = useGyroscope(settings);
+  const { beta, gamma, enabled: gyroEnabled, toggle: toggleGyro } = useGyroscope(settings);
 
   const { solutionsByFace, solving: crossSolving } = useCrossSolver(scrambledState, scramble);
 
   const [selectedFace, setSelectedFace] = useState<string>('B');
+  const [solutionResetKey, setSolutionResetKey] = useState(0);
   const [scrambleModalOpen, setScrambleModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const [activeF2LSlots, setActiveF2LSlots] = useState<Set<string>>(new Set());
+  const [activeF2LSlot, setActiveF2LSlot] = useState<string | null>(null);
 
   // --- Move queue for animated cross solution / face rotation ---
   const [moveQueue, setMoveQueue] = useState<QueueItem[]>([]);
@@ -208,6 +209,8 @@ export default function App() {
     setMoveQueue([]);
     setAnimating(null);
     pendingActionRef.current = 'execute';
+    setSolutionResetKey((k) => k + 1);
+    setActiveF2LSlot(null);
     retry();
     if (faceRotationRef.current) {
       executeMove(faceRotationRef.current);
@@ -215,29 +218,16 @@ export default function App() {
   }, [retry, executeMove, setAnimating]);
 
   const toggleF2LSlot = useCallback((slotName: string) => {
-    setActiveF2LSlots((prev) => {
-      const next = new Set(prev);
-      if (next.has(slotName)) {
-        next.delete(slotName);
-      } else {
-        next.add(slotName);
-      }
-      return next;
-    });
+    setActiveF2LSlot((prev) => (prev === slotName ? null : slotName));
   }, []);
 
-  // Build set of glowing piece IDs from active F2L slots
-  const glowingPieces = useMemo(() => {
-    const pieces = new Set<string>();
-    for (const slotName of activeF2LSlots) {
-      const slot = F2L_SLOTS.find((s) => s.name === slotName);
-      if (slot) {
-        pieces.add(`corner-${slot.cornerPiece}`);
-        pieces.add(`edge-${slot.edgePiece}`);
-      }
-    }
-    return pieces;
-  }, [activeF2LSlots]);
+  // Build set of highlighted piece IDs from active F2L slot
+  const highlightedPieces = useMemo(() => {
+    if (!activeF2LSlot) return new Set<string>();
+    const slot = F2L_SLOTS.find((s) => s.name === activeF2LSlot);
+    if (!slot) return new Set<string>();
+    return new Set([`corner-${slot.cornerPiece}`, `edge-${slot.edgePiece}`]);
+  }, [activeF2LSlot]);
 
   return (
     <div className="app">
@@ -246,7 +236,8 @@ export default function App() {
         onRetry={handleRetry}
         onShowScramble={() => setScrambleModalOpen(true)}
         onShowSettings={() => setSettingsModalOpen(true)}
-        onRequestGyro={requestPermission}
+        gyroEnabled={gyroEnabled}
+        onRequestGyro={toggleGyro}
       />
 
       <div className="cube-container">
@@ -257,7 +248,7 @@ export default function App() {
           animationDuration={settings.swipe.animationDuration}
           onAnimationComplete={handleAnimationComplete}
           onMove={handleMove}
-          glowingPieces={glowingPieces}
+          highlightedPieces={highlightedPieces}
           minSwipeDistance={settings.swipe.minDistance}
           gyroBeta={beta}
           gyroGamma={gamma}
@@ -268,6 +259,7 @@ export default function App() {
         solutionsByFace={solutionsByFace}
         solving={crossSolving}
         selectedFace={selectedFace}
+        solutionResetKey={solutionResetKey}
         onExecuteMove={handleCrossMoveExecute}
         onUndoMove={handleCrossUndoMove}
         onFaceChange={handleFaceChange}
@@ -277,7 +269,7 @@ export default function App() {
       <F2LGuide
         cubeState={cubeState}
         settings={settings}
-        activeSlots={activeF2LSlots}
+        activeSlots={activeF2LSlot ? new Set([activeF2LSlot]) : new Set<string>()}
         onToggleSlot={toggleF2LSlot}
       />
 

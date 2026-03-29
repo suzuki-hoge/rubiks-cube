@@ -17,7 +17,6 @@ export function F2LGuide({ cubeState, settings, activeSlots, onToggleSlot }: F2L
 
   return (
     <div className="f2l-guide">
-      <span className="f2l-label">F2L</span>
       {scores.map((s, i) => (
         <button
           key={s.slot.name}
@@ -25,7 +24,7 @@ export function F2LGuide({ cubeState, settings, activeSlots, onToggleSlot }: F2L
           onClick={() => onToggleSlot(s.slot.name)}
           title={`${s.slot.name}: score=${s.score} EO=${s.eoGood ? '✓' : '✗'} corner=${s.cornerVisible ? '✓' : '✗'} edge=${s.edgeVisible ? '✓' : '✗'}`}
         >
-          {i + 1}:{s.slot.name}
+          ペア{i + 1}
         </button>
       ))}
     </div>

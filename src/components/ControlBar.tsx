@@ -7,6 +7,7 @@ interface ControlBarProps {
   onRetry: () => void;
   onShowScramble: () => void;
   onShowSettings: () => void;
+  gyroEnabled: boolean;
   onRequestGyro: () => void;
 }
 
@@ -15,6 +16,7 @@ export function ControlBar({
   onRetry,
   onShowScramble,
   onShowSettings,
+  gyroEnabled,
   onRequestGyro,
 }: ControlBarProps) {
   return (
@@ -28,8 +30,11 @@ export function ControlBar({
       <button onClick={onShowScramble} title="スクランブル" className="scramble-btn">
         R&apos;
       </button>
-      <button onClick={onRequestGyro} title="ジャイロ">
-        <MdEdgesensorHigh />
+      <button onClick={onRequestGyro} title="ジャイロ" className="gyro-btn">
+        <span className="gyro-icon-wrap">
+          <MdEdgesensorHigh />
+          {!gyroEnabled && <span className="gyro-slash" />}
+        </span>
       </button>
       <button onClick={onShowSettings} className="settings-btn">
         ⚙

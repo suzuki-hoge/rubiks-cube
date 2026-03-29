@@ -11,12 +11,12 @@ interface CubeGroupProps {
   animatingMove: Move | null;
   animationDuration: number;
   onAnimationComplete: () => void;
-  glowingPieces: Set<string>;
+  highlightedPieces: Set<string>;
   highlightedCubie: string | null;
   highlightedFace: string | null;
 }
 
-// Map from 3D position to cubie identity for glow matching
+// Map from 3D position to cubie identity
 function cubieKey(x: number, y: number, z: number): string {
   return `${x},${y},${z}`;
 }
@@ -153,7 +153,7 @@ export function CubeGroup({
   animatingMove,
   animationDuration,
   onAnimationComplete,
-  glowingPieces,
+  highlightedPieces,
   highlightedCubie,
   highlightedFace,
 }: CubeGroupProps) {
@@ -207,27 +207,25 @@ export function CubeGroup({
     animGroupRef.current.quaternion.setFromAxisAngle(animConfig.current.axis, angle);
   });
 
-  // Check if a cubie should glow (is part of an F2L pair being highlighted)
-  function shouldGlow(x: number, y: number, z: number): boolean {
-    if (glowingPieces.size === 0) return false;
+  // Check if a cubie should be dimmed (not part of the highlighted F2L pair)
+  function shouldDim(x: number, y: number, z: number): boolean {
+    if (highlightedPieces.size === 0) return false;
     // Map position to piece type and index
     const absSum = Math.abs(x) + Math.abs(y) + Math.abs(z);
     if (absSum === 3) {
-      // Corner: find which corner position this is
       const cornerIdx = getCornerIndex(x, y, z);
       if (cornerIdx !== null) {
         const piece = cubeState.cp[cornerIdx];
-        if (piece !== undefined && glowingPieces.has(`corner-${piece}`)) return true;
+        if (piece !== undefined && highlightedPieces.has(`corner-${piece}`)) return false;
       }
     } else if (absSum === 2 && (x === 0 || y === 0 || z === 0)) {
-      // Edge: find which edge position this is
       const edgeIdx = getEdgeIndex(x, y, z);
       if (edgeIdx !== null) {
         const piece = cubeState.ep[edgeIdx];
-        if (piece !== undefined && glowingPieces.has(`edge-${piece}`)) return true;
+        if (piece !== undefined && highlightedPieces.has(`edge-${piece}`)) return false;
       }
     }
-    return false;
+    return true; // not a highlighted piece → dim it
   }
 
   const animatingFilter = moveRotation?.filter;
@@ -242,7 +240,7 @@ export function CubeGroup({
             key={c.key}
             position={c.position}
             colors={c.colors}
-            glowing={shouldGlow(...c.position)}
+            dimmed={shouldDim(...c.position)}
             highlightedFace={highlightedCubie === c.key ? highlightedFace : null}
           />
         ))}
@@ -255,7 +253,7 @@ export function CubeGroup({
               key={c.key}
               position={c.position}
               colors={c.colors}
-              glowing={shouldGlow(...c.position)}
+              dimmed={shouldDim(...c.position)}
               highlightedFace={highlightedCubie === c.key ? highlightedFace : null}
             />
           ))}

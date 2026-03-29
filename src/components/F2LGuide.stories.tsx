@@ -48,16 +48,9 @@ export const OneActive: Story = {
   },
 };
 
-export const TwoActive: Story = {
-  name: '2つ選択',
+export const BackSlotActive: Story = {
+  name: 'バックスロット選択',
   args: {
-    activeSlots: new Set(['RF', 'LB']),
-  },
-};
-
-export const AllActive: Story = {
-  name: '全選択',
-  args: {
-    activeSlots: new Set(['RF', 'LF', 'LB', 'RB']),
+    activeSlots: new Set(['LB']),
   },
 };

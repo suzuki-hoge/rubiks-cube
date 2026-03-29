@@ -10,6 +10,7 @@ interface CrossSolutionProps {
   solutionsByFace: SolutionsByFace;
   solving: boolean;
   selectedFace: string;
+  solutionResetKey: number;
   onExecuteMove: (move: Move) => void;
   onUndoMove: (move: Move) => void;
   onFaceChange: (face: string) => void;
@@ -20,6 +21,7 @@ export function CrossSolution({
   solutionsByFace,
   solving,
   selectedFace,
+  solutionResetKey,
   onExecuteMove,
   onUndoMove,
   onFaceChange,
@@ -51,6 +53,11 @@ export function CrossSolution({
     setSelectedIdx(null);
     setStepIdx(0);
   }, [selectedFace]);
+
+  // Reset step progress when retry button is pressed
+  useEffect(() => {
+    setStepIdx(0);
+  }, [solutionResetKey]);
 
   const handleToggleTab = useCallback(
     (idx: number) => {
