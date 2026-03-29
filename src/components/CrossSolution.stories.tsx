@@ -46,8 +46,11 @@ const solutionsByFace = {
 const meta: Meta<typeof CrossSolution> = {
   component: CrossSolution,
   args: {
+    selectedFace: 'B',
     onExecuteMove: fn(),
-    onUndo: fn(),
+    onUndoMove: fn(),
+    onFaceChange: fn(),
+    onResetSolution: fn(),
   },
   decorators: [
     (Story) => (

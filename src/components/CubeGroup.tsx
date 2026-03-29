@@ -172,6 +172,10 @@ export function CubeGroup({
   // Reset animation when move changes
   useMemo(() => {
     animProgress.current = 0;
+    // Reset quaternion to identity to prevent 1-frame flash on animation cancel
+    if (animGroupRef.current) {
+      animGroupRef.current.quaternion.identity();
+    }
     if (moveRotation) {
       animConfig.current = { axis: moveRotation.axis, angle: moveRotation.angle };
     } else {

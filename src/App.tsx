@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CubeScene } from './components/CubeScene';
 import { ControlBar } from './components/ControlBar';
 import { ScrambleModal } from './components/ScrambleModal';
@@ -11,6 +11,62 @@ import { useGyroscope } from './hooks/useGyroscope';
 import { useCrossSolver } from './hooks/useCrossSolver';
 import { F2L_SLOTS } from './cube/f2lScoring';
 import type { Move } from './types';
+
+// Absolute y-rotation to bring each cross-face color to front (white bottom, blue default front)
+const FACE_ROTATION: Record<string, Move | null> = {
+  B: null,
+  R: 'y',
+  G: 'y2',
+  O: "y'",
+};
+
+// After a y-rotation, which face becomes the new front?
+const FACE_AFTER_Y: Record<string, Record<string, string>> = {
+  y: { B: 'R', R: 'G', G: 'O', O: 'B' },
+  "y'": { B: 'O', O: 'G', G: 'R', R: 'B' },
+  y2: { B: 'G', G: 'B', R: 'O', O: 'R' },
+};
+
+// Relative y-rotation between all face pairs: FACE_TRANSITION[from][to]
+const FACE_TRANSITION: Record<string, Record<string, Move | null>> = {
+  B: { B: null, R: 'y', G: 'y2', O: "y'" },
+  R: { B: "y'", R: null, G: 'y', O: 'y2' },
+  G: { B: 'y2', R: "y'", G: null, O: 'y' },
+  O: { B: 'y', R: 'y2', G: "y'", O: null },
+};
+
+// Inverse of each move (for animated undo)
+const INVERSE_MOVE: Record<string, Move> = {
+  U: "U'",
+  "U'": 'U',
+  U2: 'U2',
+  D: "D'",
+  "D'": 'D',
+  D2: 'D2',
+  R: "R'",
+  "R'": 'R',
+  R2: 'R2',
+  L: "L'",
+  "L'": 'L',
+  L2: 'L2',
+  F: "F'",
+  "F'": 'F',
+  F2: 'F2',
+  B: "B'",
+  "B'": 'B',
+  B2: 'B2',
+  x: "x'",
+  "x'": 'x',
+  x2: 'x2',
+  y: "y'",
+  "y'": 'y',
+  y2: 'y2',
+  z: "z'",
+  "z'": 'z',
+  z2: 'z2',
+};
+
+type QueueItem = { move: Move; action: 'execute' | 'undo' };
 
 export default function App() {
   const { settings, updateSettings, resetSettings } = useSettings();
@@ -31,31 +87,132 @@ export default function App() {
 
   const { solutionsByFace, solving: crossSolving } = useCrossSolver(scrambledState, scramble);
 
+  const [selectedFace, setSelectedFace] = useState<string>('B');
   const [scrambleModalOpen, setScrambleModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [activeF2LSlots, setActiveF2LSlots] = useState<Set<string>>(new Set());
 
+  // --- Move queue for animated cross solution / face rotation ---
+  const [moveQueue, setMoveQueue] = useState<QueueItem[]>([]);
+  const pendingActionRef = useRef<'execute' | 'undo'>('execute');
+  const faceRotationRef = useRef<Move | null>(null);
+  const currentFaceRef = useRef<string>('B');
+
+  // Process queue: when no animation playing and queue has items, start next
+  useEffect(() => {
+    if (!animatingMove && moveQueue.length > 0) {
+      const next = moveQueue[0]!;
+      pendingActionRef.current = next.action;
+      setMoveQueue((prev) => prev.slice(1));
+      setAnimating(next.move);
+    }
+  }, [animatingMove, moveQueue, setAnimating]);
+
+  // Swipe handler — clears queue to avoid conflicts
   const handleMove = useCallback(
     (move: Move) => {
-      if (animatingMove) return; // ignore if already animating
+      if (animatingMove) return;
+      setMoveQueue([]);
+      pendingActionRef.current = 'execute';
       setAnimating(move);
+
+      // Sync cross-face buttons when swiping y rotations
+      const newFace = FACE_AFTER_Y[move]?.[selectedFace];
+      if (newFace) {
+        setSelectedFace(newFace);
+        currentFaceRef.current = newFace;
+        faceRotationRef.current = FACE_ROTATION[newFace] ?? null;
+      }
     },
-    [animatingMove, setAnimating],
+    [animatingMove, setAnimating, selectedFace],
   );
 
+  // Animation complete: execute or undo depending on pending action
   const handleAnimationComplete = useCallback(() => {
     if (animatingMove) {
-      executeMove(animatingMove);
+      if (pendingActionRef.current === 'undo') {
+        undo();
+      } else {
+        executeMove(animatingMove);
+      }
     }
+    pendingActionRef.current = 'execute';
     setAnimating(null);
-  }, [animatingMove, executeMove, setAnimating]);
+  }, [animatingMove, executeMove, undo, setAnimating]);
 
-  const handleCrossMoveExecute = useCallback(
-    (move: Move) => {
-      executeMove(move);
+  // Cross solution: queue a move for animated forward execution
+  const handleCrossMoveExecute = useCallback((move: Move) => {
+    setMoveQueue((prev) => [...prev, { move, action: 'execute' }]);
+  }, []);
+
+  // Cross solution: queue inverse animation + undo for backward step
+  const handleCrossUndoMove = useCallback((move: Move) => {
+    const inverse = INVERSE_MOVE[move];
+    if (inverse) {
+      setMoveQueue((prev) => [...prev, { move: inverse, action: 'undo' }]);
+    }
+  }, []);
+
+  // Face change: undo solution moves (instant), then animate relative rotation
+  const handleFaceChange = useCallback(
+    (face: string) => {
+      setMoveQueue([]);
+      setAnimating(null);
+      pendingActionRef.current = 'execute';
+
+      const oldFace = currentFaceRef.current;
+      const relativeMove = FACE_TRANSITION[oldFace]?.[face] ?? null;
+
+      // Instant: reset to scrambled + restore old face rotation
+      retry();
+      const oldRotation = FACE_ROTATION[oldFace] ?? null;
+      if (oldRotation) executeMove(oldRotation);
+
+      // Update tracking
+      currentFaceRef.current = face;
+      faceRotationRef.current = FACE_ROTATION[face] ?? null;
+      setSelectedFace(face);
+
+      // Animate relative rotation from old face to new face
+      if (relativeMove) {
+        setMoveQueue([{ move: relativeMove, action: 'execute' }]);
+      }
     },
-    [executeMove],
+    [retry, executeMove, setAnimating],
   );
+
+  // Tab toggle: reset to scrambled + face rotation (instant, no animation)
+  const handleResetSolution = useCallback(() => {
+    setMoveQueue([]);
+    setAnimating(null);
+    pendingActionRef.current = 'execute';
+    retry();
+    if (faceRotationRef.current) {
+      executeMove(faceRotationRef.current);
+    }
+  }, [retry, executeMove, setAnimating]);
+
+  // Wrap shuffle to also reset face rotation and queue
+  const handleShuffle = useCallback(() => {
+    setMoveQueue([]);
+    setAnimating(null);
+    pendingActionRef.current = 'execute';
+    faceRotationRef.current = null;
+    currentFaceRef.current = 'B';
+    setSelectedFace('B');
+    shuffle();
+  }, [shuffle, setAnimating]);
+
+  // Wrap retry to re-apply face rotation
+  const handleRetry = useCallback(() => {
+    setMoveQueue([]);
+    setAnimating(null);
+    pendingActionRef.current = 'execute';
+    retry();
+    if (faceRotationRef.current) {
+      executeMove(faceRotationRef.current);
+    }
+  }, [retry, executeMove, setAnimating]);
 
   const toggleF2LSlot = useCallback((slotName: string) => {
     setActiveF2LSlots((prev) => {
@@ -85,8 +242,8 @@ export default function App() {
   return (
     <div className="app">
       <ControlBar
-        onShuffle={shuffle}
-        onRetry={retry}
+        onShuffle={handleShuffle}
+        onRetry={handleRetry}
         onShowScramble={() => setScrambleModalOpen(true)}
         onShowSettings={() => setSettingsModalOpen(true)}
         onRequestGyro={requestPermission}
@@ -110,8 +267,11 @@ export default function App() {
       <CrossSolution
         solutionsByFace={solutionsByFace}
         solving={crossSolving}
+        selectedFace={selectedFace}
         onExecuteMove={handleCrossMoveExecute}
-        onUndo={undo}
+        onUndoMove={handleCrossUndoMove}
+        onFaceChange={handleFaceChange}
+        onResetSolution={handleResetSolution}
       />
 
       <F2LGuide

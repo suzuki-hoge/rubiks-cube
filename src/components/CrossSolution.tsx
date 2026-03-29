@@ -9,17 +9,22 @@ const FACE_LABELS: Record<string, string> = { B: '青', R: '赤', G: '緑', O: '
 interface CrossSolutionProps {
   solutionsByFace: SolutionsByFace;
   solving: boolean;
+  selectedFace: string;
   onExecuteMove: (move: Move) => void;
-  onUndo: () => void;
+  onUndoMove: (move: Move) => void;
+  onFaceChange: (face: string) => void;
+  onResetSolution: () => void;
 }
 
 export function CrossSolution({
   solutionsByFace,
   solving,
+  selectedFace,
   onExecuteMove,
-  onUndo,
+  onUndoMove,
+  onFaceChange,
+  onResetSolution,
 }: CrossSolutionProps) {
-  const [selectedFace, setSelectedFace] = useState<string>('B');
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
 
@@ -35,24 +40,21 @@ export function CrossSolution({
 
   const hasSolutions = Object.keys(solutionsByFace).length > 0;
 
-  // Reset selection when solutions change
+  // Reset selection when solutions change (e.g. after shuffle)
   useEffect(() => {
     setSelectedIdx(null);
     setStepIdx(0);
   }, [solutionsByFace]);
 
-  // Reset tab when face changes
+  // Reset tab/step when face changes (from button click or swipe y)
   useEffect(() => {
-    // Undo any applied moves first
-    for (let i = 0; i < stepIdx; i++) onUndo();
     setSelectedIdx(null);
     setStepIdx(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFace]);
 
   const handleToggleTab = useCallback(
     (idx: number) => {
-      for (let i = 0; i < stepIdx; i++) onUndo();
+      onResetSolution();
       setStepIdx(0);
 
       if (selectedIdx === idx) {
@@ -61,7 +63,7 @@ export function CrossSolution({
         setSelectedIdx(idx);
       }
     },
-    [selectedIdx, stepIdx, onUndo],
+    [selectedIdx, onResetSolution],
   );
 
   const handleMoveTap = useCallback(
@@ -75,11 +77,14 @@ export function CrossSolution({
           if (move) onExecuteMove(move);
         }
       } else {
-        for (let i = 0; i < stepIdx - target; i++) onUndo();
+        for (let i = stepIdx - 1; i >= target; i--) {
+          const move = currentSolution[i];
+          if (move) onUndoMove(move);
+        }
       }
       setStepIdx(target);
     },
-    [stepIdx, currentSolution, onExecuteMove, onUndo],
+    [stepIdx, currentSolution, onExecuteMove, onUndoMove],
   );
 
   return (
@@ -89,7 +94,7 @@ export function CrossSolution({
           <button
             key={face}
             className={`cross-face-btn face-${face} ${face === selectedFace ? 'active' : ''}`}
-            onClick={() => setSelectedFace(face)}
+            onClick={() => onFaceChange(face)}
           >
             {FACE_LABELS[face]}
           </button>
