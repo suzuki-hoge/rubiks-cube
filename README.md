@@ -4,7 +4,7 @@
 
 ## URL
 
-GitHub Pages でホスティング予定 (デプロイ後に記載)
+https://suzuki-hoge.github.io/rubiks-cube/
 
 ## 技術スタック
 
@@ -16,7 +16,7 @@ GitHub Pages でホスティング予定 (デプロイ後に記載)
 | パッケージ管理   | Yarn                                                          |
 | コード品質     | ESLint (`@typescript-eslint`, strict) + Prettier              |
 | キューブソルバー  | `cubejs` (状態管理・スクランブル) + `cube-solver` (白クロス最適解)              |
-| デプロイ      | GitHub Pages (`yarn build` → `dist/`)                         |
+| デプロイ      | GitHub Pages (`make build` → `docs/`)                         |
 
 ## 開発コマンド
 

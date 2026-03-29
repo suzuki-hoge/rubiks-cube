@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/rubiks-cube/',
   build: {
+    outDir: 'docs',
     chunkSizeWarningLimit: 1200,
   },
 });
