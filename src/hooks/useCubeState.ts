@@ -81,12 +81,14 @@ function reducer(store: CubeStore, action: CubeAction): CubeStore {
     }
     case 'SHUFFLE': {
       const scramble = generateScramble();
-      const scrambledState = applyMoves(solvedState(), scramble);
-      const scrambledCenters = applyCentersForMoves([...DEFAULT_CENTERS] as FaceColor[], scramble);
+      // Apply scramble then x2 so white is on bottom
+      const allMoves: Move[] = [...scramble, 'x2'];
+      const scrambledState = applyMoves(solvedState(), allMoves);
+      const scrambledCenters = applyCentersForMoves([...DEFAULT_CENTERS] as FaceColor[], allMoves);
       return {
         state: cloneState(scrambledState),
         centers: [...scrambledCenters],
-        scramble,
+        scramble, // store original scramble (without x2) for display
         scrambledState,
         scrambledCenters,
         moveHistory: [],

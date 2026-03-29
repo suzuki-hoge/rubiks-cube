@@ -75,28 +75,98 @@ body,
   flex-shrink: 0;
   padding: 8px;
   border-top: 1px solid #e0e0e0;
-}
-
-.cross-label {
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 4px;
+  min-height: 72px;
 }
 
 .cross-empty {
   font-size: 13px;
   color: #999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.cross-tabs {
+.cross-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ddd;
+  border-top-color: #4a6cf7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Face color selector */
+.cross-face-row {
   display: flex;
   gap: 4px;
   margin-bottom: 6px;
-  overflow-x: auto;
+}
+
+.cross-face-btn {
+  flex: 1;
+  min-height: 28px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f5f5f5;
+  color: #777;
+}
+
+.cross-face-btn.face-B {
+  border-color: #4466ff;
+  color: #4466ff;
+}
+.cross-face-btn.face-R {
+  border-color: #ee3333;
+  color: #ee3333;
+}
+.cross-face-btn.face-G {
+  border-color: #22aa22;
+  color: #22aa22;
+}
+.cross-face-btn.face-O {
+  border-color: #ee8800;
+  color: #ee8800;
+}
+
+.cross-face-btn.active.face-B {
+  background: #4466ff;
+  color: #fff;
+}
+.cross-face-btn.active.face-R {
+  background: #ee3333;
+  color: #fff;
+}
+.cross-face-btn.active.face-G {
+  background: #22aa22;
+  color: #fff;
+}
+.cross-face-btn.active.face-O {
+  background: #ee8800;
+  color: #fff;
+}
+
+/* Solution tabs */
+.cross-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .cross-tab {
-  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background: #f5f5f5;
@@ -112,23 +182,60 @@ body,
   border-color: #4a6cf7;
 }
 
+.tab-main {
+  font-weight: 500;
+}
+
+.tab-icon {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 3px;
+  border-radius: 2px;
+  line-height: 1;
+}
+
+.tab-icon-b {
+  background: rgba(0, 0, 255, 0.12);
+  color: #4466ff;
+}
+
+.tab-icon-y {
+  background: rgba(0, 0, 0, 0.08);
+  color: #888;
+}
+
+.cross-tab.active .tab-icon-b {
+  background: rgba(255, 255, 255, 0.25);
+  color: #dde;
+}
+
+.cross-tab.active .tab-icon-y {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ccd;
+}
+
 .cross-moves {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-bottom: 6px;
+  margin-top: 6px;
   min-height: 28px;
   align-items: center;
 }
 
 .cross-move {
   display: inline-block;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 14px;
   font-family: 'SF Mono', 'Menlo', monospace;
   background: #f0f0f0;
   color: #555;
+  cursor: pointer;
+}
+
+.cross-move:active {
+  opacity: 0.7;
 }
 
 .cross-move.done {
@@ -140,31 +247,6 @@ body,
   background: #fff3cd;
   color: #856404;
   font-weight: bold;
-}
-
-.cross-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.cross-controls button {
-  min-width: 44px;
-  min-height: 36px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #f5f5f5;
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.cross-controls button:active {
-  background: #e0e0e0;
-}
-
-.cross-controls button:disabled {
-  opacity: 0.3;
-  cursor: default;
 }
 
 /* F2L Guide */

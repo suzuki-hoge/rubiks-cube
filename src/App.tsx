@@ -29,7 +29,7 @@ export default function App() {
 
   const { beta, gamma, permitted, requestPermission } = useGyroscope(settings);
 
-  const crossSolutions = useCrossSolver(scrambledState, scramble);
+  const { solutionsByFace, solving: crossSolving } = useCrossSolver(scrambledState, scramble);
 
   const [scrambleModalOpen, setScrambleModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
@@ -109,10 +109,10 @@ export default function App() {
       </div>
 
       <CrossSolution
-        solutions={crossSolutions}
+        solutionsByFace={solutionsByFace}
+        solving={crossSolving}
         onExecuteMove={handleCrossMoveExecute}
         onUndo={undo}
-        animationDuration={settings.swipe.animationDuration}
       />
 
       <F2LGuide
