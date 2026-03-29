@@ -446,3 +446,10 @@ body,
 .settings-actions button:active {
   background: #e0e0e0;
 }
+
+.settings-version {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 11px;
+  color: #999;
+}

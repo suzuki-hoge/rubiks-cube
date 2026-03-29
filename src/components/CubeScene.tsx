@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { CubeGroup } from './CubeGroup';
 import type { CubeState, FaceColor, FaceName, Move } from '../types';
 import { useSwipeDetection } from '../hooks/useSwipeDetection';
-import { useCallback, useMemo, useState, useRef } from 'react';
+import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
 interface CubeSceneProps {
@@ -97,6 +97,8 @@ function CubeInteraction({
   );
 }
 
+const cameraLogCountRef = { current: 0 };
+
 export function CubeScene(props: CubeSceneProps) {
   const { gyroBeta, gyroGamma } = props;
 
@@ -108,6 +110,20 @@ export function CubeScene(props: CubeSceneProps) {
   const cameraX = distance * Math.cos(phi) * Math.sin(theta);
   const cameraY = distance * Math.sin(phi);
   const cameraZ = distance * Math.cos(phi) * Math.cos(theta);
+
+  useEffect(() => {
+    if (gyroBeta === 0 && gyroGamma === 0) return;
+    cameraLogCountRef.current++;
+    if (cameraLogCountRef.current <= 5 || cameraLogCountRef.current % 100 === 0) {
+      console.log(`[CAMERA] #${cameraLogCountRef.current}`, {
+        gyroBeta: gyroBeta.toFixed(2),
+        gyroGamma: gyroGamma.toFixed(2),
+        cameraX: cameraX.toFixed(2),
+        cameraY: cameraY.toFixed(2),
+        cameraZ: cameraZ.toFixed(2),
+      });
+    }
+  }, [gyroBeta, gyroGamma, cameraX, cameraY, cameraZ]);
 
   return (
     <Canvas

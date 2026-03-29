@@ -11,7 +11,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 export default [{ ignores: ['dist', 'storybook-static'] }, {
   files: ['**/*.{ts,tsx}'],
   languageOptions: {
-    globals: globals.browser,
+    globals: { ...globals.browser, __BUILD_VERSION__: 'readonly' },
     parser: tsparser,
     parserOptions: {
       ecmaVersion: 2020,
@@ -33,5 +33,11 @@ export default [{ ignores: ['dist', 'storybook-static'] }, {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+  },
+}, {
+  files: ['vite.config.ts'],
+  languageOptions: {
+    globals: { ...globals.node },
+    parser: tsparser,
   },
 }, ...storybook.configs["flat/recommended"]];

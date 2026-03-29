@@ -4,7 +4,7 @@ dev:
 	yarn dev
 
 build:
-	yarn build
+	BUILD_VERSION="build at: $$(date '+%Y/%m/%d %H:%M:%S')" yarn build
 
 test:
 	yarn test

@@ -140,6 +140,8 @@ export function SettingsModal({ open, onClose, settings, onUpdate, onReset }: Se
           <button onClick={onReset}>デフォルトに戻す</button>
           <button onClick={onClose}>閉じる</button>
         </div>
+
+        <div className="settings-version">version: {__BUILD_VERSION__}</div>
       </div>
     </div>
   );
