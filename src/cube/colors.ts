@@ -2,11 +2,11 @@ import type { FaceColor, FaceName } from '../types';
 
 export const FACE_COLORS: Record<FaceColor, string> = {
   W: '#FFFFFF', // U - White
-  Y: '#FFD500', // D - Yellow
-  R: '#B71234', // R - Red
-  O: '#FF5800', // L - Orange
-  B: '#0046AD', // B - Blue
-  G: '#009B48', // F - Green
+  Y: '#FFED00', // D - Yellow
+  R: '#DD1736', // R - Red
+  O: '#FF6D00', // L - Orange
+  B: '#0061D5', // B - Blue
+  G: '#00B74A', // F - Green
 };
 
 export const FACE_TO_COLOR: Record<FaceName, FaceColor> = {
@@ -18,7 +18,7 @@ export const FACE_TO_COLOR: Record<FaceName, FaceColor> = {
   B: 'B',
 };
 
-export const CUBE_BODY_COLOR = '#111111';
+export const CUBE_BODY_COLOR = '#1a1a1a';
 
 // Corner piece colors: [U/D face, clockwise face 1, clockwise face 2]
 export const CORNER_COLORS: [FaceColor, FaceColor, FaceColor][] = [

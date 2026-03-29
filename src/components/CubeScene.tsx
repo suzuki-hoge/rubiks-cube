@@ -58,7 +58,7 @@ function CubeInteraction({
   const baseTheta = Math.PI / 6;
   const phi = basePhi - (gyroBeta * Math.PI) / 180;
   const theta = baseTheta + (gyroGamma * Math.PI) / 180;
-  const distance = 7;
+  const distance = 8;
   const cameraX = distance * Math.cos(phi) * Math.sin(theta);
   const cameraY = distance * Math.sin(phi);
   const cameraZ = distance * Math.cos(phi) * Math.cos(theta);
@@ -68,7 +68,7 @@ function CubeInteraction({
     [cameraX, cameraY, cameraZ],
   );
 
-  const { handlePointerDown, handlePointerUp } = useSwipeDetection(
+  const { handlePointerDown, handlePointerUp, handlePointerCancel } = useSwipeDetection(
     onMove,
     handleHighlight,
     minSwipeDistance,
@@ -104,7 +104,7 @@ export function CubeScene(props: CubeSceneProps) {
   const baseTheta = Math.PI / 6;
   const phi = basePhi - (gyroBeta * Math.PI) / 180;
   const theta = baseTheta + (gyroGamma * Math.PI) / 180;
-  const distance = 7;
+  const distance = 8;
   const cameraX = distance * Math.cos(phi) * Math.sin(theta);
   const cameraY = distance * Math.sin(phi);
   const cameraZ = distance * Math.cos(phi) * Math.cos(theta);

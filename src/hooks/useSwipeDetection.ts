@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { FaceName, Move } from '../types';
@@ -62,11 +62,14 @@ export function useSwipeDetection(
         cubiePosition: cubiePos,
       };
 
-      // Highlight the touched face
+      // Only highlight faces with actual color (not body/gap faces)
       const rX = Math.round(cubiePos.x);
       const rY = Math.round(cubiePos.y);
       const rZ = Math.round(cubiePos.z);
-      onHighlight(`${rX},${rY},${rZ}`, FACE_TO_DIR[face]);
+      const isFaceColored = isCubieFaceColored(rX, rY, rZ, face);
+      if (isFaceColored) {
+        onHighlight(`${rX},${rY},${rZ}`, FACE_TO_DIR[face]);
+      }
     },
     [onHighlight],
   );
@@ -101,7 +104,42 @@ export function useSwipeDetection(
     [onMove, onHighlight, minDistance, frontFace],
   );
 
-  return { handlePointerDown, handlePointerUp };
+  const handlePointerCancel = useCallback(() => {
+    if (swipeStart.current) {
+      swipeStart.current = null;
+      onHighlight(null, null);
+    }
+  }, [onHighlight]);
+
+  // Global pointerup to clear highlight when pointer released outside the cube.
+  // Use setTimeout so R3F's onPointerUp fires first to process the swipe.
+  useEffect(() => {
+    const handleGlobalPointerUp = () => {
+      setTimeout(() => {
+        if (swipeStart.current) {
+          swipeStart.current = null;
+          onHighlight(null, null);
+        }
+      }, 0);
+    };
+    window.addEventListener('pointerup', handleGlobalPointerUp);
+    return () => window.removeEventListener('pointerup', handleGlobalPointerUp);
+  }, [onHighlight]);
+
+  return { handlePointerDown, handlePointerUp, handlePointerCancel };
+}
+
+// Check if a cubie face at a given position would have a sticker color (not body)
+function isCubieFaceColored(x: number, y: number, z: number, face: FaceName): boolean {
+  switch (face) {
+    case 'U': return y === 1;
+    case 'D': return y === -1;
+    case 'R': return x === 1;
+    case 'L': return x === -1;
+    case 'F': return z === 1;
+    case 'B': return z === -1;
+    default: return false;
+  }
 }
 
 function resolveMove(

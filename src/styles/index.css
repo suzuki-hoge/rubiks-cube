@@ -11,8 +11,8 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #1a1a2e;
-  color: #e0e0e0;
+  background: #ffffff;
+  color: #333;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   touch-action: none;
   user-select: none;
@@ -39,10 +39,10 @@ body,
 .control-bar button {
   flex: 1;
   min-height: 44px;
-  border: 1px solid #444;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  background: #2a2a4a;
-  color: #e0e0e0;
+  background: #f5f5f5;
+  color: #333;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -50,7 +50,7 @@ body,
 }
 
 .control-bar button:active {
-  background: #3a3a6a;
+  background: #e0e0e0;
 }
 
 .control-bar .settings-btn {
@@ -74,7 +74,7 @@ body,
 .cross-solution {
   flex-shrink: 0;
   padding: 8px;
-  border-top: 1px solid #333;
+  border-top: 1px solid #e0e0e0;
 }
 
 .cross-label {
@@ -85,7 +85,7 @@ body,
 
 .cross-empty {
   font-size: 13px;
-  color: #666;
+  color: #999;
 }
 
 .cross-tabs {
@@ -97,19 +97,19 @@ body,
 
 .cross-tab {
   padding: 4px 10px;
-  border: 1px solid #444;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  background: #2a2a4a;
-  color: #aaa;
+  background: #f5f5f5;
+  color: #777;
   font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .cross-tab.active {
-  background: #4a4a8a;
+  background: #4a6cf7;
   color: #fff;
-  border-color: #6a6aaa;
+  border-color: #4a6cf7;
 }
 
 .cross-moves {
@@ -127,18 +127,18 @@ body,
   border-radius: 3px;
   font-size: 14px;
   font-family: 'SF Mono', 'Menlo', monospace;
-  background: #2a2a4a;
-  color: #ccc;
+  background: #f0f0f0;
+  color: #555;
 }
 
 .cross-move.done {
-  background: #2a4a2a;
-  color: #8c8;
+  background: #d4edda;
+  color: #2d6a3f;
 }
 
 .cross-move.current {
-  background: #4a4a2a;
-  color: #ee8;
+  background: #fff3cd;
+  color: #856404;
   font-weight: bold;
 }
 
@@ -150,16 +150,16 @@ body,
 .cross-controls button {
   min-width: 44px;
   min-height: 36px;
-  border: 1px solid #444;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  background: #2a2a4a;
-  color: #e0e0e0;
+  background: #f5f5f5;
+  color: #333;
   font-size: 16px;
   cursor: pointer;
 }
 
 .cross-controls button:active {
-  background: #3a3a6a;
+  background: #e0e0e0;
 }
 
 .cross-controls button:disabled {
@@ -174,7 +174,7 @@ body,
   padding: 8px;
   align-items: center;
   flex-shrink: 0;
-  border-top: 1px solid #333;
+  border-top: 1px solid #e0e0e0;
 }
 
 .f2l-label {
@@ -186,30 +186,30 @@ body,
 .f2l-btn {
   flex: 1;
   min-height: 40px;
-  border: 1px solid #444;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  background: #2a2a4a;
-  color: #ccc;
+  background: #f5f5f5;
+  color: #555;
   font-size: 13px;
   cursor: pointer;
 }
 
 .f2l-btn.active {
-  background: #3a3a8a;
+  background: #4a6cf7;
   color: #fff;
-  border-color: #7a7aee;
-  box-shadow: 0 0 8px rgba(122, 122, 238, 0.4);
+  border-color: #4a6cf7;
+  box-shadow: 0 0 8px rgba(74, 108, 247, 0.4);
 }
 
 .f2l-btn:active {
-  background: #3a3a6a;
+  background: #e0e0e0;
 }
 
 /* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,13 +218,14 @@ body,
 }
 
 .modal-content {
-  background: #1e1e3e;
+  background: #ffffff;
   border-radius: 12px;
   padding: 20px;
   max-width: 400px;
   width: 100%;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
 .modal-content h2 {
@@ -234,9 +235,9 @@ body,
 
 .modal-content h3 {
   font-size: 14px;
-  color: #aaa;
+  color: #888;
   margin: 12px 0 6px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #e0e0e0;
   padding-bottom: 4px;
 }
 
@@ -245,10 +246,10 @@ body,
   width: 100%;
   margin-top: 16px;
   padding: 12px;
-  border: 1px solid #444;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  background: #2a2a4a;
-  color: #e0e0e0;
+  background: #f5f5f5;
+  color: #333;
   font-size: 16px;
   cursor: pointer;
 }
@@ -274,7 +275,7 @@ body,
 .setting-row label {
   font-size: 13px;
   min-width: 100px;
-  color: #ccc;
+  color: #555;
 }
 
 .setting-slider {
@@ -288,7 +289,7 @@ body,
   flex: 1;
   -webkit-appearance: none;
   height: 4px;
-  background: #444;
+  background: #ddd;
   border-radius: 2px;
   outline: none;
 }
@@ -297,7 +298,7 @@ body,
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
-  background: #6a6aee;
+  background: #4a6cf7;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -306,7 +307,7 @@ body,
   font-size: 13px;
   min-width: 48px;
   text-align: right;
-  color: #aaa;
+  color: #888;
   font-family: 'SF Mono', 'Menlo', monospace;
 }
 
@@ -319,14 +320,14 @@ body,
 .settings-actions button {
   flex: 1;
   padding: 10px;
-  border: 1px solid #444;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  background: #2a2a4a;
-  color: #e0e0e0;
+  background: #f5f5f5;
+  color: #333;
   font-size: 14px;
   cursor: pointer;
 }
 
 .settings-actions button:active {
-  background: #3a3a6a;
+  background: #e0e0e0;
 }

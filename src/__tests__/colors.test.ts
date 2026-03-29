@@ -8,11 +8,11 @@ describe('colors', () => {
 
   it('face colors match spec', () => {
     expect(FACE_COLORS.W).toBe('#FFFFFF');
-    expect(FACE_COLORS.Y).toBe('#FFD500');
-    expect(FACE_COLORS.R).toBe('#B71234');
-    expect(FACE_COLORS.O).toBe('#FF5800');
-    expect(FACE_COLORS.B).toBe('#0046AD');
-    expect(FACE_COLORS.G).toBe('#009B48');
+    expect(FACE_COLORS.Y).toBe('#FFED00');
+    expect(FACE_COLORS.R).toBe('#DD1736');
+    expect(FACE_COLORS.O).toBe('#FF6D00');
+    expect(FACE_COLORS.B).toBe('#0061D5');
+    expect(FACE_COLORS.G).toBe('#00B74A');
   });
 
   it('has 8 corner color definitions', () => {
