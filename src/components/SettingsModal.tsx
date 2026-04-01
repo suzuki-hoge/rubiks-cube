@@ -74,6 +74,26 @@ export function SettingsModal({ open, onClose, settings, onUpdate, onReset }: Se
           onChange={(v) => onUpdate({ gyro: { ...settings.gyro, maxAngle: v } })}
         />
 
+        <h3>シェイク</h3>
+        <Slider
+          label="感度"
+          value={settings.shake.threshold}
+          min={5}
+          max={40}
+          step={1}
+          unit=" m/s²"
+          onChange={(v) => onUpdate({ shake: { ...settings.shake, threshold: v } })}
+        />
+        <Slider
+          label="クールダウン"
+          value={settings.shake.cooldown}
+          min={200}
+          max={1500}
+          step={100}
+          unit="ms"
+          onChange={(v) => onUpdate({ shake: { ...settings.shake, cooldown: v } })}
+        />
+
         <h3>スワイプ</h3>
         <Slider
           label="判定距離"

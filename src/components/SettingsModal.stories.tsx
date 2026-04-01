@@ -26,6 +26,7 @@ export const CustomSettings: Story = {
   args: {
     settings: {
       gyro: { sensitivity: 2.0, maxAngle: 60 },
+      shake: { threshold: 15, cooldown: 600 },
       swipe: { minDistance: 40, animationDuration: 500 },
       f2l: {
         eoBonus: 50,

@@ -62,6 +62,10 @@ export interface Settings {
     sensitivity: number;
     maxAngle: number;
   };
+  shake: {
+    threshold: number; // acceleration (m/s²) to trigger shake
+    cooldown: number; // ms between shake triggers
+  };
   swipe: {
     minDistance: number;
     animationDuration: number;

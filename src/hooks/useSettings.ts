@@ -7,6 +7,10 @@ export const DEFAULT_SETTINGS: Settings = {
     sensitivity: 1.0,
     maxAngle: 90,
   },
+  shake: {
+    threshold: 15,
+    cooldown: 600,
+  },
   swipe: {
     minDistance: 20,
     animationDuration: 300,
@@ -29,6 +33,7 @@ function loadSettings(): Settings {
       const parsed = JSON.parse(raw) as Partial<Settings>;
       return {
         gyro: { ...DEFAULT_SETTINGS.gyro, ...parsed.gyro },
+        shake: { ...DEFAULT_SETTINGS.shake, ...parsed.shake },
         swipe: { ...DEFAULT_SETTINGS.swipe, ...parsed.swipe },
         f2l: { ...DEFAULT_SETTINGS.f2l, ...parsed.f2l },
       };
@@ -58,6 +63,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setSettings((prev) => {
       const next: Settings = {
         gyro: { ...prev.gyro, ...patch.gyro },
+        shake: { ...prev.shake, ...patch.shake },
         swipe: { ...prev.swipe, ...patch.swipe },
         f2l: { ...prev.f2l, ...patch.f2l },
       };
