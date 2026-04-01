@@ -59,7 +59,7 @@ export function SettingsModal({ open, onClose, settings, onUpdate, onReset }: Se
           label="感度"
           value={settings.gyro.sensitivity}
           min={0.1}
-          max={3.0}
+          max={5.0}
           step={0.1}
           unit="x"
           onChange={(v) => onUpdate({ gyro: { ...settings.gyro, sensitivity: v } })}
@@ -68,7 +68,7 @@ export function SettingsModal({ open, onClose, settings, onUpdate, onReset }: Se
           label="最大角度"
           value={settings.gyro.maxAngle}
           min={5}
-          max={90}
+          max={180}
           step={5}
           unit="°"
           onChange={(v) => onUpdate({ gyro: { ...settings.gyro, maxAngle: v } })}

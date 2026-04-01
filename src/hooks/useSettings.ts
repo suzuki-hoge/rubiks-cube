@@ -5,7 +5,7 @@ import type { Settings } from '../types';
 export const DEFAULT_SETTINGS: Settings = {
   gyro: {
     sensitivity: 1.0,
-    maxAngle: 30,
+    maxAngle: 90,
   },
   swipe: {
     minDistance: 20,

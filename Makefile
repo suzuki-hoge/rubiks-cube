@@ -3,6 +3,9 @@
 dev:
 	yarn dev
 
+iphone-dev:
+	HTTPS=1 yarn dev --host
+
 build:
 	BUILD_VERSION="build at: $$(date '+%Y/%m/%d %H:%M:%S')" yarn build
 

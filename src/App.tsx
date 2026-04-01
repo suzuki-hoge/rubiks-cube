@@ -83,7 +83,13 @@ export default function App() {
     undo,
   } = useCubeState();
 
-  const { beta, gamma, enabled: gyroEnabled, toggle: toggleGyro } = useGyroscope(settings);
+  const {
+    beta,
+    gamma,
+    enabled: gyroEnabled,
+    toggle: toggleGyro,
+    resetBase: gyroResetBase,
+  } = useGyroscope(settings);
 
   const { solutionsByFace, solving: crossSolving } = useCrossSolver(scrambledState, scramble);
 
@@ -238,6 +244,7 @@ export default function App() {
         onShowSettings={() => setSettingsModalOpen(true)}
         gyroEnabled={gyroEnabled}
         onRequestGyro={toggleGyro}
+        onGyroReset={gyroResetBase}
       />
 
       <div className="cube-container">

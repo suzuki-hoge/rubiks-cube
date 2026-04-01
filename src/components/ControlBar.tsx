@@ -1,6 +1,6 @@
 import { TfiReload } from 'react-icons/tfi';
 import { RxReload } from 'react-icons/rx';
-import { MdEdgesensorHigh } from 'react-icons/md';
+import { MdEdgesensorHigh, MdGpsFixed, MdSettings } from 'react-icons/md';
 
 interface ControlBarProps {
   onShuffle: () => void;
@@ -9,6 +9,7 @@ interface ControlBarProps {
   onShowSettings: () => void;
   gyroEnabled: boolean;
   onRequestGyro: () => void;
+  onGyroReset: () => void;
 }
 
 export function ControlBar({
@@ -18,6 +19,7 @@ export function ControlBar({
   onShowSettings,
   gyroEnabled,
   onRequestGyro,
+  onGyroReset,
 }: ControlBarProps) {
   return (
     <div className="control-bar">
@@ -36,8 +38,18 @@ export function ControlBar({
           {!gyroEnabled && <span className="gyro-slash" />}
         </span>
       </button>
+      <button
+        onClick={gyroEnabled ? onGyroReset : undefined}
+        title="ジャイロリセット"
+        className="gyro-reset-btn"
+      >
+        <span className="gyro-icon-wrap">
+          <MdGpsFixed />
+          {!gyroEnabled && <span className="gyro-slash" />}
+        </span>
+      </button>
       <button onClick={onShowSettings} className="settings-btn">
-        ⚙
+        <MdSettings />
       </button>
     </div>
   );

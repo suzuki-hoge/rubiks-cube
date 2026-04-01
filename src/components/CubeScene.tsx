@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { CubeGroup } from './CubeGroup';
 import type { CubeState, FaceColor, FaceName, Move } from '../types';
 import { useSwipeDetection } from '../hooks/useSwipeDetection';
-import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useState, useRef } from 'react';
 import * as THREE from 'three';
 
 interface CubeSceneProps {
@@ -53,20 +53,11 @@ function CubeInteraction({
     setHighlightedFace(faceDir);
   }, []);
 
-  // Camera angles influenced by gyroscope
-  const basePhi = Math.PI / 6;
-  const baseTheta = Math.PI / 6;
-  const phi = basePhi - (gyroBeta * Math.PI) / 180;
-  const theta = baseTheta + (gyroGamma * Math.PI) / 180;
-  const distance = 8;
-  const cameraX = distance * Math.cos(phi) * Math.sin(theta);
-  const cameraY = distance * Math.sin(phi);
-  const cameraZ = distance * Math.cos(phi) * Math.cos(theta);
+  // Gyro → cube rotation (beta=x-axis, gamma=y-axis)
+  const betaRad = (gyroBeta * Math.PI) / 180;
+  const gammaRad = (gyroGamma * Math.PI) / 180;
 
-  const frontFace = useMemo(
-    () => computeFrontFace(cameraX, cameraY, cameraZ),
-    [cameraX, cameraY, cameraZ],
-  );
+  const frontFace = useMemo(() => computeFrontFace(3.46, 4, 6.93), []);
 
   const { handlePointerDown, handlePointerUp } = useSwipeDetection(
     onMove,
@@ -77,11 +68,15 @@ function CubeInteraction({
 
   return (
     <>
-      <perspectiveCamera position={[cameraX, cameraY, cameraZ]} fov={40} near={0.1} far={100} />
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 8, 5]} intensity={0.8} />
       <directionalLight position={[-3, -2, 4]} intensity={0.3} />
-      <group ref={groupRef} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
+      <group
+        ref={groupRef}
+        rotation={[betaRad, gammaRad, 0]}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+      >
         <CubeGroup
           cubeState={cubeState}
           centers={centers}
@@ -97,38 +92,11 @@ function CubeInteraction({
   );
 }
 
-const cameraLogCountRef = { current: 0 };
-
 export function CubeScene(props: CubeSceneProps) {
-  const { gyroBeta, gyroGamma } = props;
-
-  const basePhi = Math.PI / 6;
-  const baseTheta = Math.PI / 6;
-  const phi = basePhi - (gyroBeta * Math.PI) / 180;
-  const theta = baseTheta + (gyroGamma * Math.PI) / 180;
-  const distance = 8;
-  const cameraX = distance * Math.cos(phi) * Math.sin(theta);
-  const cameraY = distance * Math.sin(phi);
-  const cameraZ = distance * Math.cos(phi) * Math.cos(theta);
-
-  useEffect(() => {
-    if (gyroBeta === 0 && gyroGamma === 0) return;
-    cameraLogCountRef.current++;
-    if (cameraLogCountRef.current <= 5 || cameraLogCountRef.current % 100 === 0) {
-      console.log(`[CAMERA] #${cameraLogCountRef.current}`, {
-        gyroBeta: gyroBeta.toFixed(2),
-        gyroGamma: gyroGamma.toFixed(2),
-        cameraX: cameraX.toFixed(2),
-        cameraY: cameraY.toFixed(2),
-        cameraZ: cameraZ.toFixed(2),
-      });
-    }
-  }, [gyroBeta, gyroGamma, cameraX, cameraY, cameraZ]);
-
   return (
     <Canvas
       camera={{
-        position: [cameraX, cameraY, cameraZ],
+        position: [3.46, 4, 6.93],
         fov: 40,
         near: 0.1,
         far: 100,

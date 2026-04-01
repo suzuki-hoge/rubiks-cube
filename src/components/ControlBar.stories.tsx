@@ -10,6 +10,7 @@ const meta: Meta<typeof ControlBar> = {
     onShowScramble: fn(),
     onShowSettings: fn(),
     onRequestGyro: fn(),
+    onGyroReset: fn(),
   },
   decorators: [
     (Story) => (
